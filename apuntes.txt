@@ -1,0 +1,159 @@
+------------------------------------------------TEORIA---------------------------------------------------------
+
+Conceptos basicos de 3D
+*CAMARA
+*GEOMETRIAS
+*MATERIALES
+*MESH
+*LUCES
+*RENDER
+ 
+Tenemos dos tipos de camaras:
+1)Perspective (tamaño de los elementos segun la distancia)
+2)Orthographic (tamaño de los elementos siempre son iguales independientementes de la distancia)
+
+los elementos (casas-autos-etc) con un conjuntos de vertices
+Lo mas primitivo que podemos tener es un vertice.
+vertice (es un punto) -> (edges)linea (union de dos puntos)  -> (faces)caras(union de tres puntos, triangulos) -> 
+polygonos (union de dos triangulos) -> superficie (union de triangulos que se encierran una un volumen)
+
+las geometria se hacen con software para modelan en 3D => blender o maya
+
+Geometrias primitivas => esfera,caja, cono, cilindro
+
+Materiales (es la piel de la forma y nos dice como reaccionamos a nuestro entorno como la luz)
+cada material es un Shader(sombreadora), un sheader es un programa que nosotros podemos escribir para definir
+cual va a ser la logica para definir cada px en nuestra geometria, podemos crear materiales personalizados 
+o usar los materiales estandar
+
+tenemos 4 tipos de LUCES
+1)ambient light (se define una intensidad y color)
+2)directional light (se define un punto y una direccion)
+3)point light
+4)spot light
+
+
+A la combinacion de una geometria y un material obtenemos una mesh(mella)
+
+Al renderizarlo todo capturamos una imagen(este proceso se hace 60 veces por segundo)
+
+para trabajar con graficos nosotros necesitamos algun drives de grafico 
+los mas concocidos son opgl-vulcam-metal
+
+cuando nosotros trabajamos con un motor de graficos como por ejemplo unity,
+el motor grafico se encarga de hacer la sincronizacion entre todo lo que se hace en el motor y 
+hacer el enganche para bajarlo a openGL, vulkan o Metal
+
+cuando nosotros trabajamos en entorno web, lo que nosotros hacemos es trabajar con webGl que implenta openGl
+
+openGL-vulkan-Metal => webGl(JS) => three.js => React three fire
+
+El renderizador que se encarga de hacer todo esto en el navegador se llama webGL esta api es de bajo nivel
+three.js es una libreria de alto nivel y esta basada en webGL
+React three Fiber esta basado en three.js
+Drei es una libreria de utlizades para React three fire
+
+
+
+------------------------------------------------PRACTICA---------------------------------------------------------
+CLASE 1
+
+********************* Para empezar necesitamos tres cosas principales ************************
+
+1- escena => new THREE.Scene();
+2- camara =>THREE.PerspectiveCamera(Field of View o Campo de Visión,Relación de aspecto (aspect),near, far)
+3- render => THREE.WebGLRenderer()
+4- colocar un tamaño al reder y agregarlo al body
+
+con estos pasos deberiamos visualizar un canvas en el html
+
+*************************** CREAR CONTENIDO ************************************ 
+
+los elementos 3D tienen principalmente 3 actores
+-Geometrias 
+-Materiales 
+-Animacion
+
+Pasos para agregar un elementos
+
+1-Geometria => new THREE.BoxGeometry( 1, 1, 1 ); // hay muchos tipos de geometrias (buscar en liberia)
+2-Material => new THREE.MeshStandardMaterial( { color: 0x00ff00 } );  // hay muchos tipos de materiales (buscar en liberia)
+3-mesh => new THREE.Mesh( geometry, material ); => conbinacion de geometria y material
+4-Agregamos el elemento a la escena y definimos una posicion a la camara (los objetos 3d tiene por defecto la posicion 0,0,0
+y en un principio la camara y el cubo estan en la misma posicion)
+
+****************************** RENDERIZAR ESCENA ************************************
+
+Se crea una una funcion donde se le indica al render que renderice la escena y la camara.
+Tambien se le colocala la funcion requestAnimationFrame( animate )
+para refrescar los fotogramas para darle el aspecto de animacion
+
+
+-------------------------------------------------------------------------------------------------------------
+CLASE 2
+-Modificar el Fondo
+-Aplicar transparencia a las escenas
+-Hacer una malla de guia
+-Gestion de luces y sombras
+
+***************MODIFICAR EL COLOR DE LA ESCENA*********************
+scene.background = new THREE.Color(0x666666)  // este color es hexagecimal pero se reemplaza el "#" por "0x"
+
+*************** FONDO TRANSPARENTE *******************
+Para colocar un fondo transparente se hace con una propiedad del renderizador
+// Al crear la escena se le indica mediante alpha
+const renderer = new THREE.WebGLRenderer({alpha:true});
+
+************** CREAR GRILLA ****************
+
+new THREE.GridHelper(100,10) //  los parametros son el tamaño y la cantidad de cuadrados
+luego lo agregamos a la camara
+
+************** GESTION DE LUCES Y SOMBRAS **************** (no pude hacer el plano de color rojo y que reciba la sombra)
+1-Para crear una luz necesitamos indicar el color e intensidad
+new THREE.DirectionalLight(0xffffff, 1,10)
+Luego indicamos una posicion y la agregamos a la escena
+
+2-Indicar las luces que hay que castear y cuales son los objetos 
+que van a recibir dichas luces y que tienen la posibilidad de generar sombras
+
+.castShadow = true // se lo agregamos a luz y a los 
+objetos que queremos que generen sombra 
+.receiveShadow=true // se lo agregamos a los 
+objetos que queremos reciban las luces
+
+NOTA: NO ME SALE LAS SOMBRAS PORQUE NO ENTIENDO COMO FUNCIONAL LAS POSICIONES
+DE LA LUZ Y LOS ELEMENTOS PARA GENERAR SOMBRA
+
+-------------------------------------------------------------------------------------------------------------
+CLASE 3
+
+- Control de orbita: nos permite orbitar a traves de un elemento ejecutando diferente acciones, como el zoom, paneos, orbitaciones
+
+1) Descargar la libreria de orbin control del repositorio de github (examples/jsm/controls/OrbitControls.js)
+2) Descargar three.js (el orbit no funciona con CDN de three.js) (build/three.module.js)
+3) creamos el controlador =>  new OrbitControls(camera,renderer.domElement) // pasamos como parametro la camara y el render
+con esto obtenemos 3 acciones: zoom -orbita - Paneo 
+Podemos modificar las caractericas de cada una de estas acciones, limitandolas, deshabilitando, etc.
+
+-------------------------------------------------------------------------------------------------------------
+CLASE 4 
+
+- Importar modelos (https://sketchfab.com/)
+Los modelos estan en diferentes formatos:
+Para el navegador se usan los modelos con formatos GLFT porque estan optimizados para el navegador 
+- HDRI (https://www.maxroz.com/hdri)
+ es una luz ambiental que gestionar el ambiente que esta alrededor de nuestro objeto
+
+ -------------------------------------------------------------------------------------------------------------
+CLASE 5
+-Añadir interactividad sobre los elementos e introducir animaciones
+
+https://www.mixamo.com/ (para crear animaciones y personajes)
+
+
+
+
+
+
+
